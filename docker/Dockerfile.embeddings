@@ -1,0 +1,24 @@
+# Local embedding server using sentence-transformers
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+RUN pip install --no-cache-dir \
+    sentence-transformers \
+    fastapi \
+    uvicorn \
+    pydantic
+
+# Copy embedding server
+COPY docker/embedding_server.py .
+
+# Configuration
+ENV MODEL=all-MiniLM-L6-v2
+ENV PORT=8080
+ENV HOST=0.0.0.0
+
+EXPOSE 8080
+
+# Download model on startup
+CMD ["sh", "-c", "python -c \"from sentence_transformers import SentenceTransformer; SentenceTransformer('${MODEL}')\" && uvicorn embedding_server:app --host ${HOST} --port ${PORT}"]

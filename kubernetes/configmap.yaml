@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: memory-mcp
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: memory-mcp-config
+  namespace: memory-mcp
+data:
+  qdrant-url: "http://qdrant:6333"
+  embedding-provider: "local"
+  embedding-url: "http://embeddings:8080"
+  log-level: "info"

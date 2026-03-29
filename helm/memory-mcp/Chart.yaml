@@ -1,0 +1,18 @@
+apiVersion: v2
+name: memory-mcp
+description: Memory MCP Server - Persistent memory for AI agents
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - mcp
+  - memory
+  - ai
+  - vector-database
+  - embeddings
+home: https://github.com/openclaw/memory-mcp
+sources:
+  - https://github.com/openclaw/memory-mcp
+maintainers:
+  - name: OpenClaw
+    url: https://openclaw.ai

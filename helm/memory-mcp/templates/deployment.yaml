@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "memory-mcp.fullname" . }}
+  labels:
+    {{- include "memory-mcp.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "memory-mcp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "memory-mcp.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: QDRANT_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "memory-mcp.fullname" . }}-config
+                  key: qdrant-url
+            - name: EMBEDDING_PROVIDER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "memory-mcp.fullname" . }}-config
+                  key: embedding-provider
+            - name: EMBEDDING_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "memory-mcp.fullname" . }}-config
+                  key: embedding-url
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "memory-mcp.fullname" . }}-config
+                  key: log-level
+            {{- if .Values.config.embedding.apiKey }}
+            - name: EMBEDDING_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "memory-mcp.fullname" . }}-secret
+                  key: embedding-api-key
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10

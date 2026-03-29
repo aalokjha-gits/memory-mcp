@@ -1,0 +1,143 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memory-mcp
+  namespace: memory-mcp
+  labels:
+    app: memory-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: memory-mcp
+  template:
+    metadata:
+      labels:
+        app: memory-mcp
+    spec:
+      containers:
+      - name: memory-mcp
+        image: openclaw/memory-mcp:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: QDRANT_URL
+          valueFrom:
+            configMapKeyRef:
+              name: memory-mcp-config
+              key: qdrant-url
+        - name: EMBEDDING_PROVIDER
+          valueFrom:
+            configMapKeyRef:
+              name: memory-mcp-config
+              key: embedding-provider
+        - name: EMBEDDING_URL
+          valueFrom:
+            configMapKeyRef:
+              name: memory-mcp-config
+              key: embedding-url
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: memory-mcp-config
+              key: log-level
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qdrant
+  namespace: memory-mcp
+  labels:
+    app: qdrant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qdrant
+  template:
+    metadata:
+      labels:
+        app: qdrant
+    spec:
+      containers:
+      - name: qdrant
+        image: qdrant/qdrant:v1.13.2
+        ports:
+        - containerPort: 6333
+        - containerPort: 6334
+        volumeMounts:
+        - name: qdrant-data
+          mountPath: /qdrant/storage
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 6333
+          initialDelaySeconds: 10
+          periodSeconds: 30
+      volumes:
+      - name: qdrant-data
+        persistentVolumeClaim:
+          claimName: qdrant-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embeddings
+  namespace: memory-mcp
+  labels:
+    app: embeddings
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: embeddings
+  template:
+    metadata:
+      labels:
+        app: embeddings
+    spec:
+      containers:
+      - name: embeddings
+        image: openclaw/embeddings-local:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MODEL
+          value: "all-MiniLM-L6-v2"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30

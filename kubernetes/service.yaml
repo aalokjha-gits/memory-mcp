@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: memory-mcp
+  namespace: memory-mcp
+spec:
+  selector:
+    app: memory-mcp
+  ports:
+  - port: 3000
+    targetPort: 3000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qdrant
+  namespace: memory-mcp
+spec:
+  selector:
+    app: qdrant
+  ports:
+  - name: http
+    port: 6333
+    targetPort: 6333
+  - name: grpc
+    port: 6334
+    targetPort: 6334
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: embeddings
+  namespace: memory-mcp
+spec:
+  selector:
+    app: embeddings
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP

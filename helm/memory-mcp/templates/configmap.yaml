@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "memory-mcp.fullname" . }}-config
+  labels:
+    {{- include "memory-mcp.labels" . | nindent 4 }}
+data:
+  qdrant-url: {{ .Values.config.vectordb.url | quote }}
+  embedding-provider: {{ .Values.config.embedding.provider | quote }}
+  embedding-url: {{ .Values.config.embedding.url | quote }}
+  log-level: {{ .Values.config.logLevel | quote }}
