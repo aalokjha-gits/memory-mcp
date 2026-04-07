@@ -2,7 +2,7 @@
 replicaCount: 1
 
 image:
-  repository: openclaw/memory-mcp
+  repository: aalokjha-gits/memory-mcp
   pullPolicy: IfNotPresent
   tag: "latest"
 
@@ -27,7 +27,7 @@ config:
 embeddings:
   enabled: true
   image:
-    repository: openclaw/embeddings-local
+    repository: aalokjha-gits/embeddings-local
     tag: latest
   model: all-MiniLM-L6-v2
   resources:

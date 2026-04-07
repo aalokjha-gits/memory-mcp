@@ -20,7 +20,7 @@ A Model Context Protocol (MCP) server that gives your AI agents persistent, sear
 
 ```bash
 # Clone and run
-git clone https://github.com/openclaw/memory-mcp.git
+git clone https://github.com/aalokjha-gits/memory-mcp.git
 cd memory-mcp
 docker-compose up -d
 ```
@@ -34,7 +34,7 @@ That's it! Memory MCP is now running with:
 
 ```bash
 # Clone and install
-git clone https://github.com/openclaw/memory-mcp.git
+git clone https://github.com/aalokjha-gits/memory-mcp.git
 cd memory-mcp
 npm install
 
@@ -199,7 +199,7 @@ version: '3.8'
 
 services:
   memory-mcp:
-    image: openclaw/memory-mcp:latest
+    image: aalokjha-gits/memory-mcp:latest
     ports:
       - "3000:3000"
     environment:
@@ -218,7 +218,7 @@ services:
       - qdrant_data:/qdrant/storage
 
   embeddings:
-    image: openclaw/embeddings-local:latest
+    image: aalokjha-gits/embeddings-local:latest
     ports:
       - "8080:8080"
 
@@ -268,4 +268,4 @@ Contributions welcome! Please read our contributing guidelines.
 
 ## Credits
 
-Built by [OpenClaw](https://openclaw.ai) - AI agents that actually work.
+Built by [Aalok Jha](https://github.com/aalokjha-gits)

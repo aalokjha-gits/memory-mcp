@@ -10,9 +10,9 @@ keywords:
   - ai
   - vector-database
   - embeddings
-home: https://github.com/openclaw/memory-mcp
+home: https://github.com/aalokjha-gits/memory-mcp
 sources:
-  - https://github.com/openclaw/memory-mcp
+  - https://github.com/aalokjha-gits/memory-mcp
 maintainers:
-  - name: OpenClaw
-    url: https://openclaw.ai
+  - name: Aalok Jha
+    email: aalokaj59@gmail.com

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: memory-mcp
-        image: openclaw/memory-mcp:latest
+        image: aalokjha-gits/memory-mcp:latest
         ports:
         - containerPort: 3000
         env:
@@ -123,7 +123,7 @@ spec:
     spec:
       containers:
       - name: embeddings
-        image: openclaw/embeddings-local:latest
+        image: aalokjha-gits/embeddings-local:latest
         ports:
         - containerPort: 8080
         env:

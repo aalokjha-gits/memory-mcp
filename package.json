@@ -1,5 +1,5 @@
 {
-  "name": "@openclaw/memory-mcp",
+  "name": "memory-mcp",
   "version": "1.0.0",
   "description": "Persistent memory for AI agents with semantic search and auto-categorization",
   "main": "dist/index.js",
@@ -26,16 +26,16 @@
     "semantic-search",
     "persistent-memory"
   ],
-  "author": "OpenClaw",
+  "author": "Aalok Jha <aalokaj59@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/openclaw/memory-mcp.git"
+    "url": "https://github.com/aalokjha-gits/memory-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/openclaw/memory-mcp/issues"
+    "url": "https://github.com/aalokjha-gits/memory-mcp/issues"
   },
-  "homepage": "https://github.com/openclaw/memory-mcp#readme",
+  "homepage": "https://github.com/aalokjha-gits/memory-mcp#readme",
   "type": "module",
   "engines": {
     "node": ">=18"
