@@ -24,31 +24,36 @@ export interface Config {
 }
 
 // Default configurations per provider
-export const EMBEDDING_DEFAULTS: Record<EmbeddingProvider, Partial<Config['embedding']>> = {
+export const EMBEDDING_DEFAULTS: Record<EmbeddingProvider, Partial<Config['embedding']> & { maxTokens: number }> = {
   transformersjs: {
     url: '',
     model: 'Xenova/all-MiniLM-L6-v2',
     dimensions: 384,
+    maxTokens: 512,
   },
   local: {
     url: 'http://localhost:8080',
     model: 'all-MiniLM-L6-v2',
     dimensions: 384,
+    maxTokens: 512,
   },
   openai: {
     url: 'https://api.openai.com/v1',
     model: 'text-embedding-3-small',
     dimensions: 1536,
+    maxTokens: 8191,
   },
   ollama: {
     url: 'http://localhost:11434',
     model: 'nomic-embed-text',
     dimensions: 768,
+    maxTokens: 8192,
   },
   custom: {
     url: '',
     model: 'custom',
     dimensions: 384,
+    maxTokens: 512,
   },
 };
 

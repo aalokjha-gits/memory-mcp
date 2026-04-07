@@ -10,18 +10,21 @@ import { createVectorDBProvider, VectorDBProvider } from './vectordb/index.js';
 import { MemoryPayload } from './vectordb/types.js';
 import { autoCategory } from './categorize.js';
 import { autoImportance } from './importance.js';
+import { generateInstructions } from './instructions.js';
 
 let embeddingProvider: EmbeddingProvider;
 let vectordbProvider: VectorDBProvider;
 
-const server = new McpServer({
-  name: 'memory-mcp',
-  version: '1.0.0'
-});
+function createServer(instructions: string): McpServer {
+
+const server = new McpServer(
+  { name: 'memory-mcp', version: '1.1.0' },
+  { instructions }
+);
 
 server.tool(
   'memory_add',
-  'Store a memory',
+  'Store a memory with auto-categorization and importance scoring. Use this to persist decisions, findings, debug insights, infrastructure details, user preferences, and session summaries.',
   {
     content: z.string().describe('The memory content to store'),
     type: z.enum(['knowledge', 'decision', 'pattern', 'preference', 'context', 'debug', 'auto']).default('auto'),
@@ -73,7 +76,7 @@ server.tool(
 
 server.tool(
   'memory_link',
-  'Link two related memories bidirectionally',
+  'Link two related memories bidirectionally. Memories with similarity > 0.7 are auto-linked on store, but use this for connections the auto-linker missed.',
   {
     id1: z.string().describe('First memory ID'),
     id2: z.string().describe('Second memory ID')
@@ -93,7 +96,7 @@ server.tool(
 
 server.tool(
   'memory_search',
-  'Semantic search for memories',
+  'Semantic search across all memories. Use this at the start of a session, before making decisions, or when you need context about a topic. Returns results ranked by relevance.',
   {
     query: z.string().describe('The search query text'),
     limit: z.number().default(10),
@@ -138,7 +141,7 @@ server.tool(
 
 server.tool(
   'memory_list',
-  'List or browse memories',
+  'Browse memories by type, tags, or project with pagination. Use this when you need to review all memories in a category rather than searching by meaning.',
   {
     type: z.string().optional(),
     tags: z.array(z.string()).optional(),
@@ -179,7 +182,7 @@ server.tool(
 
 server.tool(
   'memory_forget',
-  'Delete a memory',
+  'Delete a memory by ID. Memories are never automatically deleted — use this for outdated or incorrect information.',
   {
     memoryId: z.string().describe('The ID of the memory to delete')
   },
@@ -198,7 +201,7 @@ server.tool(
 
 server.tool(
   'memory_profile',
-  'User preference store',
+  'Key-value store for user preferences and settings. Use this for structured data like preferred_language, editor, timezone — not for general knowledge (use memory_add for that).',
   {
     action: z.enum(['get', 'set', 'list']),
     key: z.string().optional().describe('Required for get and set'),
@@ -235,7 +238,7 @@ server.tool(
 
 server.tool(
   'memory_help',
-  'Show usage guide',
+  'Show server configuration and available tools.',
   {},
   async () => {
     const config = getConfig();
@@ -268,6 +271,10 @@ Environment Variables:
   }
 );
 
+return server;
+
+}
+
 async function run() {
   try {
     const config = getConfig();
@@ -275,13 +282,15 @@ async function run() {
     console.error(`Embedding: ${config.embedding.provider} (${config.embedding.dimensions} dims)`);
     console.error(`Vector DB: ${config.vectordb.provider} at ${config.vectordb.url}`);
 
-    // Initialize providers
     embeddingProvider = await createEmbeddingProvider(config.embedding);
     console.error(`Embedding provider initialized: ${embeddingProvider.name}`);
 
     vectordbProvider = await createVectorDBProvider(config.vectordb, config.embedding.dimensions);
     await vectordbProvider.init();
     console.error(`Vector DB provider initialized: ${vectordbProvider.name}`);
+
+    const instructions = generateInstructions(config);
+    const server = createServer(instructions);
 
     const transport = new StdioServerTransport();
     await server.connect(transport);
