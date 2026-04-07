@@ -24,11 +24,16 @@ export interface VectorDBProvider {
   linkMemories(id1: string, id2: string): Promise<void>;
 }
 
-export async function createVectorDBProvider(config: Config['vectordb']): Promise<VectorDBProvider> {
+export async function createVectorDBProvider(config: Config['vectordb'], dimensions?: number): Promise<VectorDBProvider> {
   switch (config.provider) {
-    case 'qdrant':
+    case 'local': {
+      const { LocalVectorDBProvider } = await import('./local.js');
+      return new LocalVectorDBProvider(config, dimensions);
+    }
+    case 'qdrant': {
       const { QdrantProvider } = await import('./qdrant.js');
       return new QdrantProvider(config);
+    }
     default:
       throw new Error(`Unknown vector DB provider: ${config.provider}`);
   }

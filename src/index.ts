@@ -256,10 +256,11 @@ Memory Types:
   knowledge, decision, pattern, preference, context, debug, auto
 
 Environment Variables:
-  EMBEDDING_PROVIDER  - local | openai | ollama | custom
-  EMBEDDING_URL       - Embedding service URL
+  EMBEDDING_PROVIDER  - transformersjs (default) | local | openai | ollama | custom
+  EMBEDDING_URL       - Embedding service URL (for local/openai/ollama)
   EMBEDDING_API_KEY   - API key for OpenAI/Ollama
-  QDRANT_URL          - Qdrant endpoint
+  VECTORDB_PROVIDER   - local (default) | qdrant
+  QDRANT_URL          - Qdrant endpoint (when using qdrant)
   VECTORDB_COLLECTION - Collection name (default: memories)
 `;
     return { content: [{ type: 'text', text: help }] };
@@ -277,7 +278,7 @@ async function run() {
     embeddingProvider = await createEmbeddingProvider(config.embedding);
     console.error(`Embedding provider initialized: ${embeddingProvider.name}`);
 
-    vectordbProvider = await createVectorDBProvider(config.vectordb);
+    vectordbProvider = await createVectorDBProvider(config.vectordb, config.embedding.dimensions);
     await vectordbProvider.init();
     console.error(`Vector DB provider initialized: ${vectordbProvider.name}`);
 

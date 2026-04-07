@@ -1,7 +1,7 @@
 import process from 'node:process';
 
-export type EmbeddingProvider = 'local' | 'openai' | 'ollama' | 'custom';
-export type VectorDBProvider = 'qdrant' | 'chromadb' | 'milvus';
+export type EmbeddingProvider = 'transformersjs' | 'local' | 'openai' | 'ollama' | 'custom';
+export type VectorDBProvider = 'local' | 'qdrant' | 'chromadb' | 'milvus';
 
 export interface Config {
   server: {
@@ -25,6 +25,11 @@ export interface Config {
 
 // Default configurations per provider
 export const EMBEDDING_DEFAULTS: Record<EmbeddingProvider, Partial<Config['embedding']>> = {
+  transformersjs: {
+    url: '',
+    model: 'Xenova/all-MiniLM-L6-v2',
+    dimensions: 384,
+  },
   local: {
     url: 'http://localhost:8080',
     model: 'all-MiniLM-L6-v2',
@@ -48,6 +53,10 @@ export const EMBEDDING_DEFAULTS: Record<EmbeddingProvider, Partial<Config['embed
 };
 
 export const VECTORDB_DEFAULTS: Record<VectorDBProvider, Partial<Config['vectordb']>> = {
+  local: {
+    url: '',
+    collection: 'memories',
+  },
   qdrant: {
     url: 'http://localhost:6333',
     collection: 'memories',
@@ -71,11 +80,11 @@ function getEnv<T>(key: string, defaultValue: T, parser?: (v: string) => T): T {
 
 export function loadConfig(): Config {
   // Detect embedding provider
-  const embeddingProvider = getEnv('EMBEDDING_PROVIDER', 'local') as EmbeddingProvider;
+  const embeddingProvider = getEnv('EMBEDDING_PROVIDER', 'transformersjs') as EmbeddingProvider;
   const embeddingDefaults = EMBEDDING_DEFAULTS[embeddingProvider];
   
   // Detect vector DB provider
-  const vectordbProvider = getEnv('VECTORDB_PROVIDER', 'qdrant') as VectorDBProvider;
+  const vectordbProvider = getEnv('VECTORDB_PROVIDER', 'local') as VectorDBProvider;
   const vectordbDefaults = VECTORDB_DEFAULTS[vectordbProvider];
 
   return {

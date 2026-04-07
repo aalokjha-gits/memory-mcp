@@ -1,8 +1,8 @@
 # Memory MCP
 
-**Persistent memory for AI agents. One-click setup.**
+**Persistent memory for AI agents. Plug-and-play with zero infrastructure.**
 
-A Model Context Protocol (MCP) server that gives your AI agents persistent, searchable memory powered by vector embeddings.
+A Model Context Protocol (MCP) server that gives your AI agents persistent, searchable memory. Works out of the box with zero configuration using local embeddings and file-based storage.
 
 ## Features
 
@@ -10,44 +10,84 @@ A Model Context Protocol (MCP) server that gives your AI agents persistent, sear
 - 🔗 **Auto-Linking** - Related memories are automatically connected
 - 🏷️ **Auto-Categorization** - Memories are categorized by type (knowledge, decision, pattern, etc.)
 - ⭐ **Importance Scoring** - Automatic priority based on content
-- 🔌 **Pluggable Embeddings** - Local (free), OpenAI, Ollama, or custom
-- 🐳 **Docker & Kubernetes Ready** - One command deployment
-- 📦 **Zero Config** - Works out of the box with sensible defaults
+- 🔌 **Pluggable Embeddings** - Transformers.js (default), OpenAI, Ollama, or custom
+- 🐳 **Docker & Kubernetes Ready** - Ready for production scale
+- 📦 **Zero Config** - No database or API keys required to start
 
 ## Quick Start
 
-### Docker (Recommended)
+Start the server immediately with zero configuration.
 
 ```bash
-# Clone and run
-git clone https://github.com/aalokjha-gits/memory-mcp.git
-cd memory-mcp
-docker-compose up -d
+# Run using npx (requires Node 18+)
+npx memory-mcp
 ```
 
-That's it! Memory MCP is now running with:
-- Memory server on port 3000
-- Qdrant vector DB on port 6333
-- Local embeddings on port 8080
-
-### Local Installation
+Or install and run locally:
 
 ```bash
-# Clone and install
 git clone https://github.com/aalokjha-gits/memory-mcp.git
 cd memory-mcp
 npm install
-
-# Set environment variables (or use defaults)
-export QDRANT_URL=http://localhost:6333
-export EMBEDDING_PROVIDER=local
-export EMBEDDING_URL=http://localhost:8080
-
-# Run
 npm start
 ```
 
+### How it works by default:
+- **Embeddings**: Uses in-process Transformers.js (`all-MiniLM-L6-v2`, 384 dimensions). No external server or Python needed.
+- **Storage**: Uses a local JSON vector store at `~/.memory-mcp/`. No Docker or database required.
+- **Initialization**: The first run downloads a ~90MB model file. Every run after that is instant.
+
+## Production Setup
+
+Upgrade to high-performance storage and external embedding providers when you're ready to scale.
+
+### Qdrant + External Embeddings
+
+1. Start Qdrant and your embedding service using Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+2. Configure environment variables to point to your production services:
+
+```bash
+export VECTORDB_PROVIDER=qdrant
+export QDRANT_URL=http://localhost:6333
+export EMBEDDING_PROVIDER=openai
+export EMBEDDING_API_KEY=sk-your-key
+```
+
+### Docker Compose
+
+```yaml
+version: '3.8'
+
+services:
+  memory-mcp:
+    image: aalokjha-gits/memory-mcp:latest
+    environment:
+      - VECTORDB_PROVIDER=qdrant
+      - QDRANT_URL=http://qdrant:6333
+      - EMBEDDING_PROVIDER=openai
+      - EMBEDDING_API_KEY=your-api-key
+    depends_on:
+      - qdrant
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  qdrant_data:
+```
+
 ### Kubernetes
+
+Deploy to Kubernetes using Helm or raw manifests:
 
 ```bash
 # Using Helm
@@ -63,25 +103,24 @@ kubectl apply -f kubernetes/
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `EMBEDDING_PROVIDER` | `local` | Embedding provider: `local`, `openai`, `ollama`, `custom` |
-| `EMBEDDING_URL` | `http://localhost:8080` | Embedding service URL |
-| `EMBEDDING_API_KEY` | - | API key for OpenAI/Ollama |
+| `EMBEDDING_PROVIDER` | `transformersjs` | Embedding provider: `transformersjs`, `openai`, `ollama`, `custom` |
+| `VECTORDB_PROVIDER` | `local` | Storage provider: `local`, `qdrant` |
+| `EMBEDDING_URL` | - | Embedding service URL (for Ollama/Custom) |
+| `EMBEDDING_API_KEY` | - | API key for OpenAI |
 | `EMBEDDING_MODEL` | Provider default | Model name |
 | `EMBEDDING_DIMENSIONS` | Provider default | Vector dimensions |
 | `QDRANT_URL` | `http://localhost:6333` | Qdrant endpoint |
 | `VECTORDB_COLLECTION` | `memories` | Collection name |
-| `PORT` | `3000` | Server port |
 | `LOG_LEVEL` | `info` | Log level: debug, info, warn, error |
 
 ### Embedding Providers
 
-#### Local (Default - Free)
+#### Transformers.js (Default - Zero Config)
 
-No API key required. Uses a local embedding server.
+Runs locally in your Node.js process. No external services needed.
 
 ```bash
-export EMBEDDING_PROVIDER=local
-export EMBEDDING_URL=http://localhost:8080
+export EMBEDDING_PROVIDER=transformersjs
 ```
 
 #### OpenAI
@@ -192,40 +231,6 @@ Store user preferences.
 | `context` | Situational context | working on, currently, project |
 | `debug` | Debug notes | error, bug, fix, crash, issue |
 
-## Docker Compose
-
-```yaml
-version: '3.8'
-
-services:
-  memory-mcp:
-    image: aalokjha-gits/memory-mcp:latest
-    ports:
-      - "3000:3000"
-    environment:
-      - QDRANT_URL=http://qdrant:6333
-      - EMBEDDING_PROVIDER=local
-      - EMBEDDING_URL=http://embeddings:8080
-    depends_on:
-      - qdrant
-      - embeddings
-
-  qdrant:
-    image: qdrant/qdrant:latest
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant_data:/qdrant/storage
-
-  embeddings:
-    image: aalokjha-gits/embeddings-local:latest
-    ports:
-      - "8080:8080"
-
-volumes:
-  qdrant_data:
-```
-
 ## Development
 
 ```bash
@@ -244,17 +249,36 @@ npm test
 
 ## Architecture
 
+Memory MCP supports two modes:
+
+### Zero-Config Mode (Default)
+Simple, file-based storage for personal use.
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   MCP Client    │────▶│   Memory MCP    │────▶│    Qdrant       │
-│   (Claude/AI)   │     │    Server       │     │   Vector DB     │
+│   MCP Client    │────▶│   Memory MCP    │────▶│   Local JSON    │
+│   (Claude/AI)   │     │    Server       │     │   Vector Store  │
 └─────────────────┘     └────────┬────────┘     └─────────────────┘
                                  │
                                  ▼
                         ┌─────────────────┐
-                        │   Embedding     │
-                        │   Provider      │
-                        │ (local/openai)  │
+                        │ Transformers.js │
+                        │  (In-process)   │
+                        └─────────────────┘
+```
+
+### Production Mode
+High-performance configuration for shared environments.
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   MCP Client    │────▶│   Memory MCP    │────▶│     Qdrant      │
+│   (Claude/AI)   │     │    Server       │     │    Vector DB    │
+└─────────────────┘     └────────┬────────┘     └─────────────────┘
+                                 │
+                                 ▼
+                        ┌─────────────────┐
+                        │    External     │
+                        │    Provider     │
+                        │ (OpenAI/Ollama) │
                         └─────────────────┘
 ```
 

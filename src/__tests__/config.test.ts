@@ -25,19 +25,19 @@ describe('config', () => {
       expect(config.server.logLevel).toBe('info');
     });
 
-    it('returns correct local embedding defaults', () => {
+    it('returns correct transformersjs embedding defaults', () => {
       const config = loadConfig();
-      expect(config.embedding.provider).toBe('local');
-      expect(config.embedding.url).toBe('http://localhost:8080');
-      expect(config.embedding.model).toBe('all-MiniLM-L6-v2');
+      expect(config.embedding.provider).toBe('transformersjs');
+      expect(config.embedding.url).toBe('');
+      expect(config.embedding.model).toBe('Xenova/all-MiniLM-L6-v2');
       expect(config.embedding.dimensions).toBe(384);
       expect(config.embedding.apiKey).toBeUndefined();
     });
 
-    it('returns correct qdrant vectordb defaults', () => {
+    it('returns correct local vectordb defaults', () => {
       const config = loadConfig();
-      expect(config.vectordb.provider).toBe('qdrant');
-      expect(config.vectordb.url).toBe('http://localhost:6333');
+      expect(config.vectordb.provider).toBe('local');
+      expect(config.vectordb.url).toBe('');
       expect(config.vectordb.collection).toBe('memories');
       expect(config.vectordb.apiKey).toBeUndefined();
     });

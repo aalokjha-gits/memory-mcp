@@ -35,9 +35,9 @@ class EmbedResponse(BaseModel):
     model: str
 
 
-@app.post("/embed", response_model=EmbedResponse)
+@app.post("/embed")
 async def embed(request: EmbedRequest):
-    """Generate embeddings for input text(s)."""
+    """Generate embeddings for input text(s). Returns raw arrays for TEI compatibility."""
     try:
         # Handle single string or list
         texts = request.inputs if isinstance(request.inputs, list) else [request.inputs]
@@ -45,11 +45,8 @@ async def embed(request: EmbedRequest):
         # Generate embeddings
         embeddings = model.encode(texts, normalize_embeddings=True)
         
-        return EmbedResponse(
-            embeddings=embeddings.tolist(),
-            dimensions=len(embeddings[0]),
-            model=MODEL_NAME
-        )
+        # Return raw array of arrays (TEI-compatible format expected by local.ts)
+        return embeddings.tolist()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

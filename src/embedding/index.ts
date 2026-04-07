@@ -14,18 +14,26 @@ export interface EmbeddingProvider {
 
 export async function createEmbeddingProvider(config: Config['embedding']): Promise<EmbeddingProvider> {
   switch (config.provider) {
-    case 'local':
+    case 'transformersjs': {
+      const { TransformersJSEmbeddingProvider } = await import('./transformersjs.js');
+      return new TransformersJSEmbeddingProvider(config);
+    }
+    case 'local': {
       const { LocalEmbeddingProvider } = await import('./local.js');
       return new LocalEmbeddingProvider(config);
-    case 'openai':
+    }
+    case 'openai': {
       const { OpenAIEmbeddingProvider } = await import('./openai.js');
       return new OpenAIEmbeddingProvider(config);
-    case 'ollama':
+    }
+    case 'ollama': {
       const { OllamaEmbeddingProvider } = await import('./ollama.js');
       return new OllamaEmbeddingProvider(config);
-    case 'custom':
+    }
+    case 'custom': {
       const { CustomEmbeddingProvider } = await import('./custom.js');
       return new CustomEmbeddingProvider(config);
+    }
     default:
       throw new Error(`Unknown embedding provider: ${config.provider}`);
   }
