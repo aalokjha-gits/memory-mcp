@@ -26,6 +26,9 @@ npm-debug.log*
 # Test
 coverage/
 
+# Python venv
+.venv/
+
 # Misc
 *.tgz
 .npm

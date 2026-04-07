@@ -11,9 +11,7 @@ To start developing on this project, ensure you have Node.js 18 or higher instal
    ```bash
    npm install
    ```
-3. Ensure you have the following services running:
-   - Qdrant vector database.
-   - An embedding service (OpenAI, Ollama, or a custom local server).
+3. No external services needed — the project uses local embeddings and file-based storage by default.
 
 ## Available Scripts
 
@@ -40,10 +38,10 @@ Maintain the following standards in your contributions:
 
 ## Pull Request Process
 
-1. Create a new branch from `main`.
+1. Create a new branch from `master`.
 2. Implement your changes.
 3. Ensure all tests pass and the build succeeds.
-4. Submit a PR against the `main` branch.
+4. Submit a PR against the `master` branch.
 
 ## Reporting Issues
 

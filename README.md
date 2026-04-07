@@ -11,7 +11,6 @@ A Model Context Protocol (MCP) server that gives your AI agents persistent, sear
 - 🏷️ **Auto-Categorization** - Memories are categorized by type (knowledge, decision, pattern, etc.)
 - ⭐ **Importance Scoring** - Automatic priority based on content
 - 🔌 **Pluggable Embeddings** - Transformers.js (default), OpenAI, Ollama, or custom
-- 🐳 **Docker & Kubernetes Ready** - Ready for production scale
 - 📦 **Zero Config** - No database or API keys required to start
 
 ## Quick Start
@@ -20,81 +19,51 @@ Start the server immediately with zero configuration.
 
 ```bash
 # Run using npx (requires Node 18+)
-npx memory-mcp
+npx @aalokjha/mem-aj
 ```
 
-Or install and run locally:
+Or install locally:
 
 ```bash
-git clone https://github.com/aalokjha-gits/memory-mcp.git
-cd memory-mcp
-npm install
-npm start
+npm i @aalokjha/mem-aj
 ```
 
 ### How it works by default:
 - **Embeddings**: Uses in-process Transformers.js (`all-MiniLM-L6-v2`, 384 dimensions). No external server or Python needed.
-- **Storage**: Uses a local JSON vector store at `~/.memory-mcp/`. No Docker or database required.
+- **Storage**: Uses a local JSON vector store at `~/.memory-mcp/`.
 - **Initialization**: The first run downloads a ~90MB model file. Every run after that is instant.
+
+## MCP Client Configuration
+
+Add Memory MCP to your favorite AI tools by adding these configurations.
+
+### OpenCode / Claude Desktop / Cursor
+
+```json
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@aalokjha/mem-aj"]
+    }
+  }
+}
+```
 
 ## Production Setup
 
-Upgrade to high-performance storage and external embedding providers when you're ready to scale.
+Configure environment variables to use high-performance storage and external embedding providers.
 
 ### Qdrant + External Embeddings
 
-1. Start Qdrant and your embedding service using Docker Compose:
-
-```bash
-docker-compose up -d
-```
-
-2. Configure environment variables to point to your production services:
+1. Run your own Qdrant instance.
+2. Set environment variables to point to your services:
 
 ```bash
 export VECTORDB_PROVIDER=qdrant
 export QDRANT_URL=http://localhost:6333
 export EMBEDDING_PROVIDER=openai
 export EMBEDDING_API_KEY=sk-your-key
-```
-
-### Docker Compose
-
-```yaml
-version: '3.8'
-
-services:
-  memory-mcp:
-    image: aalokjha-gits/memory-mcp:latest
-    environment:
-      - VECTORDB_PROVIDER=qdrant
-      - QDRANT_URL=http://qdrant:6333
-      - EMBEDDING_PROVIDER=openai
-      - EMBEDDING_API_KEY=your-api-key
-    depends_on:
-      - qdrant
-
-  qdrant:
-    image: qdrant/qdrant:latest
-    ports:
-      - "6333:6333"
-    volumes:
-      - qdrant_data:/qdrant/storage
-
-volumes:
-  qdrant_data:
-```
-
-### Kubernetes
-
-Deploy to Kubernetes using Helm or raw manifests:
-
-```bash
-# Using Helm
-helm install memory-mcp ./helm/memory-mcp
-
-# Or apply manifests directly
-kubectl apply -f kubernetes/
 ```
 
 ## Configuration
