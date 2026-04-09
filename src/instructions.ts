@@ -1,13 +1,9 @@
-import { Config, EMBEDDING_DEFAULTS, EmbeddingProvider } from './config.js';
-
-function getMaxWords(provider: EmbeddingProvider): number {
-  const maxTokens = EMBEDDING_DEFAULTS[provider]?.maxTokens ?? 512;
-  // Rough token-to-word ratio: 1 token ≈ 0.75 words
-  return Math.floor(maxTokens * 0.75);
-}
+import { Config } from './config.js';
 
 export function generateInstructions(config: Config): string {
-  const maxWords = getMaxWords(config.embedding.provider);
+  const maxTokens = config.embedding.maxTokens;
+  // Rough token-to-word ratio: 1 token ≈ 0.75 words
+  const maxWords = Math.floor(maxTokens * 0.75);
 
   return `# Memory MCP — Agent Instructions
 
@@ -34,7 +30,7 @@ export function generateInstructions(config: Config): string {
 
 ## How to Store Effective Memories
 
-- **Keep each memory under ${maxWords} words** (current embedding model: ${config.embedding.model}, context window: ${EMBEDDING_DEFAULTS[config.embedding.provider]?.maxTokens} tokens). Longer content degrades search quality.
+- **Keep each memory under ${maxWords} words** (current embedding model: ${config.embedding.model}, context window: ${maxTokens} tokens). Longer content degrades search quality.
 - If you have more to store, **split into multiple focused memories** — one topic per memory.
 - Always set \`type\` to the most specific category: knowledge, decision, pattern, preference, context, or debug. Use "auto" only when unsure.
 - Use \`tags\` for searchability — short, consistent tag names (e.g., "auth", "database", "deployment").
@@ -62,7 +58,7 @@ export function generateInstructions(config: Config): string {
 
 ## Constraints
 
-- Embedding model: ${config.embedding.model} (${config.embedding.dimensions} dimensions, ${EMBEDDING_DEFAULTS[config.embedding.provider]?.maxTokens} token context)
+- Embedding model: ${config.embedding.model} (${config.embedding.dimensions} dimensions, ${maxTokens} token context)
 - Storage: ${config.vectordb.provider}${config.vectordb.provider === 'local' ? ' (file-based at ~/.memory-mcp/)' : ''}
 - Auto-linking threshold: similarity > 0.7
 - Memories are never automatically deleted — use \`memory_forget\` explicitly`;

@@ -21,7 +21,7 @@ export class QdrantProvider implements VectorDBProvider {
     this.url = vectordbConfig.url;
     this.collection = vectordbConfig.collection;
     this.dimensions = embeddingConfig?.dimensions || 384;
-    this.embeddingConfig = embeddingConfig || { provider: 'local', url: '', model: '', dimensions: 384 };
+    this.embeddingConfig = embeddingConfig || { provider: 'local', url: '', model: '', dimensions: 384, maxTokens: 512 };
   }
 
   async init(): Promise<void> {

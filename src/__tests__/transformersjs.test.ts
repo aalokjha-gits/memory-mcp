@@ -30,7 +30,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'custom/model',
-        dimensions: 512,
+        dimensions: 512, maxTokens: 512,
       });
       expect(provider.getDimensions()).toBe(512);
     });
@@ -40,7 +40,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: '',
-        dimensions: 384,
+        dimensions: 384, maxTokens: 512,
       });
       expect(provider.getDimensions()).toBe(384);
     });
@@ -50,7 +50,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 768,
+        dimensions: 768, maxTokens: 512,
       });
       expect(provider.getDimensions()).toBe(768);
     });
@@ -62,7 +62,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 384,
+        dimensions: 384, maxTokens: 512,
       });
       expect(provider.name).toBe('transformersjs');
     });
@@ -74,7 +74,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 384,
+        dimensions: 384, maxTokens: 512,
       });
       expect(provider.getDimensions()).toBe(384);
     });
@@ -84,7 +84,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'custom/model',
-        dimensions: 1024,
+        dimensions: 1024, maxTokens: 512,
       });
       expect(provider.getDimensions()).toBe(1024);
     });
@@ -99,7 +99,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 3,
+        dimensions: 3, maxTokens: 512,
       });
 
       const result = await provider.getEmbedding('hello world');
@@ -116,7 +116,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 2,
+        dimensions: 2, maxTokens: 512,
       });
 
       const result = await provider.getEmbedding('test');
@@ -140,7 +140,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 3,
+        dimensions: 3, maxTokens: 512,
       });
 
       const result = await provider.getEmbeddings(['hello', 'world']);
@@ -157,7 +157,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 1,
+        dimensions: 1, maxTokens: 512,
       });
 
       await provider.getEmbeddings(['test text']);
@@ -174,7 +174,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 1,
+        dimensions: 1, maxTokens: 512,
       });
 
       expect(mockPipeline).not.toHaveBeenCalled();
@@ -190,7 +190,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'Xenova/all-MiniLM-L6-v2',
-        dimensions: 1,
+        dimensions: 1, maxTokens: 512,
       });
 
       await provider.getEmbeddings(['a']);
@@ -209,7 +209,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: '',
-        dimensions: 1,
+        dimensions: 1, maxTokens: 512,
       });
 
       await provider.getEmbeddings(['test']);
@@ -227,7 +227,7 @@ describe('TransformersJSEmbeddingProvider', () => {
         provider: 'transformersjs',
         url: '',
         model: 'custom/embed-model',
-        dimensions: 1,
+        dimensions: 1, maxTokens: 512,
       });
 
       await provider.getEmbeddings(['test']);

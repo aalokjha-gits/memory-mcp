@@ -14,6 +14,7 @@ export interface Config {
     apiKey?: string;
     model: string;
     dimensions: number;
+    maxTokens: number;
   };
   vectordb: {
     provider: VectorDBProvider;
@@ -103,6 +104,7 @@ export function loadConfig(): Config {
       apiKey: getEnv('EMBEDDING_API_KEY', undefined),
       model: getEnv('EMBEDDING_MODEL', embeddingDefaults.model || ''),
       dimensions: getEnv('EMBEDDING_DIMENSIONS', embeddingDefaults.dimensions || 384, Number),
+      maxTokens: getEnv('EMBEDDING_MAX_TOKENS', embeddingDefaults.maxTokens, Number),
     },
     vectordb: {
       provider: vectordbProvider,

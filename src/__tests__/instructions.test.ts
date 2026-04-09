@@ -10,6 +10,7 @@ function makeConfig(overrides: Partial<Config['embedding']> = {}): Config {
       url: '',
       model: 'Xenova/all-MiniLM-L6-v2',
       dimensions: 384,
+      maxTokens: 512,
       ...overrides,
     },
     vectordb: {
@@ -41,6 +42,7 @@ describe('generateInstructions', () => {
       provider: 'openai',
       model: 'text-embedding-3-small',
       dimensions: 1536,
+      maxTokens: 8191,
     }));
     expect(instructions).toContain('6143 words');
     expect(instructions).toContain('8191 token');
@@ -52,6 +54,7 @@ describe('generateInstructions', () => {
       provider: 'ollama',
       model: 'nomic-embed-text',
       dimensions: 768,
+      maxTokens: 8192,
     }));
     expect(instructions).toContain('6144 words');
     expect(instructions).toContain('nomic-embed-text');
