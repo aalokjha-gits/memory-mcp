@@ -12,6 +12,7 @@ A Model Context Protocol (MCP) server that gives your AI agents persistent, sear
 - ⭐ **Importance Scoring** - Automatic priority based on content
 - 🔌 **Pluggable Embeddings** - Transformers.js (default), OpenAI, Ollama, or custom
 - 📦 **Zero Config** - No database or API keys required to start
+- 🤖 **Agent Instructions** - Agents automatically learn when and how to use memory tools via MCP protocol
 
 ## Quick Start
 
@@ -78,6 +79,7 @@ export EMBEDDING_API_KEY=sk-your-key
 | `EMBEDDING_API_KEY` | - | API key for OpenAI |
 | `EMBEDDING_MODEL` | Provider default | Model name |
 | `EMBEDDING_DIMENSIONS` | Provider default | Vector dimensions |
+| `EMBEDDING_MAX_TOKENS` | Provider default | Max token context window for embeddings |
 | `QDRANT_URL` | `http://localhost:6333` | Qdrant endpoint |
 | `VECTORDB_COLLECTION` | `memories` | Collection name |
 | `LOG_LEVEL` | `info` | Log level: debug, info, warn, error |
@@ -215,6 +217,27 @@ npm run dev
 # Run tests
 npm test
 ```
+
+## Agent Instructions
+
+The server automatically injects usage instructions into the connected agent's context via the MCP `instructions` protocol field. Agents learn:
+
+- **When** to search, store, and link memories
+- **How** to write effective memories (word limits adapted to the configured embedding model)
+- **What** memory types to use and cross-tool workflows
+
+No manual prompt engineering or AGENTS.md configuration needed. Just connect and the agent knows what to do.
+
+Token limits per provider default:
+
+| Provider | Max Tokens | Max Words |
+|----------|-----------|-----------|
+| Transformers.js | 512 | ~384 |
+| OpenAI | 8,191 | ~6,143 |
+| Ollama | 8,192 | ~6,144 |
+| Custom | 512 | ~384 |
+
+Override with `EMBEDDING_MAX_TOKENS` if using a non-default model.
 
 ## Architecture
 
