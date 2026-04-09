@@ -28,18 +28,26 @@ export class OpenAIEmbeddingProvider implements EmbeddingProvider {
     return results[0];
   }
 
+  private supportsDimensionsParam(): boolean {
+    return this.model.startsWith('text-embedding-3-');
+  }
+
   async getEmbeddings(texts: string[]): Promise<number[][]> {
+    const body: Record<string, unknown> = {
+      input: texts,
+      model: this.model,
+    };
+    if (this.supportsDimensionsParam()) {
+      body.dimensions = this.dimensions;
+    }
+
     const response = await fetch(`${this.url}/embeddings`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${this.apiKey}`,
       },
-      body: JSON.stringify({
-        input: texts,
-        model: this.model,
-        dimensions: this.dimensions,
-      }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

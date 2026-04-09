@@ -1,20 +1,17 @@
 import { Config } from '../config.js';
 import { EmbeddingProvider } from './index.js';
 
-/**
- * Custom embedding provider for any HTTP endpoint
- * Expects: POST {url}/embed with body { inputs: string[] }
- * Returns: number[][]
- */
 export class CustomEmbeddingProvider implements EmbeddingProvider {
   name = 'custom';
   private url: string;
   private apiKey?: string;
+  private model: string;
   private dimensions: number;
 
   constructor(config: Config['embedding']) {
     this.url = config.url;
     this.apiKey = config.apiKey;
+    this.model = config.model || 'custom';
     this.dimensions = config.dimensions;
 
     if (!this.url) {
@@ -36,10 +33,11 @@ export class CustomEmbeddingProvider implements EmbeddingProvider {
       headers['Authorization'] = `Bearer ${this.apiKey}`;
     }
 
-    const response = await fetch(`${this.url}/embed`, {
+    const endpoint = this.url.endsWith('/embeddings') ? this.url : `${this.url}/v1/embeddings`;
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ inputs: texts }),
+      body: JSON.stringify({ input: texts, model: this.model }),
     });
 
     if (!response.ok) {
@@ -47,12 +45,21 @@ export class CustomEmbeddingProvider implements EmbeddingProvider {
     }
 
     const data = await response.json() as unknown;
-    
+
+    if (this.isOpenAIFormat(data)) {
+      return (data as { data: Array<{ embedding: number[] }> }).data.map(item => item.embedding);
+    }
+
     if (Array.isArray(data) && Array.isArray(data[0])) {
       return data as number[][];
     }
-    
-    throw new Error('Invalid response format from custom embedding service');
+
+    throw new Error('Unsupported response format. Expected OpenAI-compatible { data: [{ embedding }] } or raw number[][]');
+  }
+
+  private isOpenAIFormat(data: unknown): boolean {
+    return typeof data === 'object' && data !== null && 'data' in data &&
+      Array.isArray((data as { data: unknown }).data);
   }
 
   getDimensions(): number {
