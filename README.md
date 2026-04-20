@@ -14,6 +14,9 @@ A Model Context Protocol (MCP) server that gives your AI agents persistent, sear
 - 📦 **Zero Config** - No database or API keys required to start
 - 🤖 **Agent Instructions** - Agents automatically learn when and how to use memory tools via MCP protocol
 
+> ### Web Dashboard
+> Browse and search your memories in the browser with [memory-mcp-dashboard](https://github.com/aalokjha-gits/memory-mcp-dashboard) — cyberpunk-themed UI, neural graph visualization, same storage.
+
 ## Quick Start
 
 Start the server immediately with zero configuration.
